@@ -91,7 +91,7 @@ header.insertAdjacentHTML("beforeend", searchBarHTML);
 const SearchBar = document.getElementById("search");
 
 //search functionali
-SearchBar.addEventListener("keypress", (e) => {
+SearchBar.addEventListener("keyup", (e) => {
   const filteredStudents = [];
   userInput = SearchBar.value.toLowerCase();
   for (let i = 0; i < data.length; i++) {
