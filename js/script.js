@@ -15,7 +15,7 @@ This function will create and insert/append the elements needed to display a "pa
 */
 
 function showPage(list, page) {
-   //setup bounds for the page
+  //setup bounds for the page
   const startIndex = page * 9 - 9;
   const endIndex = page * 9;
 
@@ -25,22 +25,22 @@ function showPage(list, page) {
 
   //loop through list to create html
   for (let i = 0; i < list.length; i++) {
-    if (i >= startIndex && i <= endIndex) {
+    if (i >= startIndex && i < endIndex) {
       const html = `
        <li class="student-item cf">
        <div class="student-details">
-         <img class="avatar" src="https://randomuser.me/api/portraits/women/25.jpg" alt="Profile Picture">
-         <h3>${list[i].name.first}</h3>
-         <span class="email">ethel.dean@example.com</span>
+         <img class="avatar" src="${list[i].picture.large}" alt="Profile Picture">
+         <h3>${list[i].name.first} ${list[i].name.last}</h3>
+         <span class="email">${list[i].email}</span>
        </div>
        <div class="joined-details">
-         <span class="date">Joined 12-15-2005</span>
+         <span class="date">${list[i].registered.date}</span>
        </div>
      </li>
        `;
-      //console.log(list[i].name.first);
+      //console.log(html);
 
-      //add new html 
+      //add new html
       studentList.insertAdjacentHTML("beforeend", html);
     }
   }
@@ -52,11 +52,10 @@ This function will create and insert/append the elements needed for the paginati
 */
 
 function addPagination(list) {
-
-   //setup number of buttons needed and clear current buttons
+  //setup number of buttons needed and clear current buttons
   const numberOfButtons = Math.ceil(list.length / 9);
-  const linkList = document.querySelector(".link-list");
-  linkList.innerHTML = "";
+  const pageList = document.querySelector(".link-list");
+  pageList.innerHTML = "";
 
   for (let i = 1; i <= numberOfButtons; i++) {
     const html = `
@@ -64,13 +63,13 @@ function addPagination(list) {
      <button type="button">${i}</button>
      </li>  
      `;
-    linkList.insertAdjacentHTML("beforeend", html);
+    pageList.insertAdjacentHTML("beforeend", html);
   }
-  linkList.querySelector("button").classList.add("active");
+  pageList.querySelector("button").classList.add("active");
 
   //setup event listener for clickig on the page buttons
-  linkList.addEventListener("click", (e) => {
-    const activeButton = linkList.querySelector(".active");
+  pageList.addEventListener("click", (e) => {
+    const activeButton = pageList.querySelector(".active");
     const buttonClicked = e.target.closest("button");
 
     if (activeButton && buttonClicked) {
@@ -83,10 +82,39 @@ function addPagination(list) {
     }
   });
 }
-// Call functions
 
 //Search bar
+const header = document.querySelector(".header");
+const searchBarHTML =
+  '<label for="search" class="student-search"><span>Search by name</span><input id="search" placeholder="Search by name..."><button type="button"><img src="img/icn-search.svg" alt="Search icon"></button></label>';
+header.insertAdjacentHTML("beforeend", searchBarHTML);
+const SearchBar = document.getElementById("search");
 
-const searchBarHTML = '<label for="search" class="student-search"><span>Search by name</span><input id="search" placeholder="Search by name..."><button type="button"><img src="img/icn-search.svg" alt="Search icon"></button></label>';
+//search functionali
+SearchBar.addEventListener("keypress", (e) => {
+  const filteredStudents = [];
+  userInput = SearchBar.value.toLowerCase();
+  for (let i = 0; i < data.length; i++) {
+    const searchStudent = `${data[i].name.first.toLowerCase()} ${data[i].name.last.toLowerCase()}`;
+   
+    if (searchStudent.includes(userInput)) {
+      filteredStudents.push(data[i]);
+      //console.log(data[i]);
+      //console.log(searchStudent);
+    }
+    if (filteredStudents.length > 0) {
+      addPagination(filteredStudents);
+      showPage(filteredStudents, 1);
+      //console.log(filteredStudents);
+    } else {
+      const studentList = document.querySelector(".student-list");
+      studentList.innerHTML = `<h3>"No results found :("</h3>`;
+      const pageList = document.querySelector(".link-list");
+      pageList.innerHTML = "";
+    }
+  }
+});
+
+// Call functions
 addPagination(data);
 showPage(data, 1);
